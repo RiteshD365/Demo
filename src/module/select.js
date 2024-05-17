@@ -1,61 +1,57 @@
 import React, { useState } from 'react';
 
-const Select = () => {
-  const [formData, setFormData] = useState({
-    H: ''
-  });
-  const [same,setSame] = useState([])
-  const [users, setUsers] = useState([]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
+const MyForm = () => {
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [currentValue, setCurrentValue] = useState('');
+  console.log(currentValue);
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Check if the new value is different from the previous value
-    if (!users.length || users[users.length - 1].H !== formData.H) {
-      setUsers([...users, formData]);
-    }else{
-      setSame([...same, formData]);
+
+    if (selectedValues.length > 0 && selectedValues[selectedValues.length - 1].value === currentValue) {
+      const updatedValues = selectedValues.map((item, index) => {
+
+        if (index === selectedValues.length - 1) {
+          return { ...item, count: item.count + 1 };
+        }
+        return item;
+      });
+      setSelectedValues(updatedValues);
+
+    } else {
+      setSelectedValues([...selectedValues, { value: currentValue, count: 1 }]);
+      console.log(selectedValues);
     }
-    // setFormData({ H: '' });
-    console.log('Form data:', formData);
-    console.log('All users:', users);
+
+    setCurrentValue('');
   };
+  const handleClear = () => {
+    setSelectedValues([""])
+  }
 
   return (
-    <div className="container">
+    <div>
       <form onSubmit={handleSubmit}>
-        <select id="cars" name="H" value={formData.H} onChange={handleChange}>
+        <select value={currentValue} onChange={(e) => setCurrentValue(e.target.value)}>
           <option value="">Select an option</option>
           <option value="H">H</option>
           <option value="S">S</option>
-        </select>
 
-        <button type="submit" className="submit-btn">Submit</button>
+        </select>
+        <button type="submit">Submit</button>
       </form>
-      <div>
-        <h2>Submitted Users:</h2>
-        <ul>
-          {users.map((user, index) => (
-            <li style={{ display: 'inline-block', marginRight: '10px' }} key={index}>
-              selected {user.H}
-            </li>
-          ))}
-          {same.map((same, index) => (
-            <li style={{ display: 'block', marginRight: '10px' }} key={index}>
-              selected {same.H}
-            </li>
-          ))}
-        </ul>
+        <button type='submit' onClick={handleClear}>clear</button>
+
+      <div style={{ display: 'flex' }}>
+        {selectedValues.map((item, index) => (
+          <div key={index} style={{ margin: '0 10px' }}>
+            {[...Array(item.count)].map((value, i) => (
+              <div key={i}>{item.value}</div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default Select;
+export default MyForm;
